@@ -1,4 +1,6 @@
 <script>
+import { get_cookie } from './cookie.js';
+
 export default {
     props: {
         action_id: Number
@@ -13,6 +15,9 @@ export default {
     mounted() {
         let origin = window.location.origin;
         let url_group = origin + "/api/actions/" + this.action_id + "/status";
+        if (!get_cookie("token")) {
+            this.$router.push("/login");
+        }
         fetch(url_group).then(resp => {
             if (resp.status != 200) {
                 this.fetch_error = "Не удалось получить статус действия с id = " + this.action_id
