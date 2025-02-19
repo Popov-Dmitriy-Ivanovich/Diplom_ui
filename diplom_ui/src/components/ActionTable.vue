@@ -1,5 +1,6 @@
 <script>
 import Action from './Action.vue'
+import ActionData from './ActionData.vue'
 import { get_cookie } from './cookie.js';
 
 export default {
@@ -7,16 +8,18 @@ export default {
         return {
             text: '',
             fetch_error: null,
-            action_ids: []
+            action_ids: [],
+            show_action_data: null
         }
     },
     mounted() {
         if (!get_cookie("token")) {
             this.$router.push("/login")
         }
+        this.fetch_action_ids()
     },
     components: {
-        Action
+        Action, ActionData
     },
     methods: {
         fetch_action_ids() {
@@ -44,12 +47,12 @@ export default {
             <h1 class="PageName"> Доступные программы </h1>
             <div class="UpdateButtonContainer">
                 <button @click="fetch_action_ids" class="UpdateButton">
-                    Обновить
+                    &#10227; Обновить
                 </button>
             </div>
         </div>
         <div class="ActionTableContainer">
-            <table v-if="action_ids" class="ActionContainer">
+            <table v-if="action_ids && !this.show_action_data" class="ActionContainer">
                 <thead>
                     <tr>
                         <th scope="col">Название</th>
@@ -60,12 +63,19 @@ export default {
                 </thead>
                 <tbody>
                     <tr class="EmptyRow"></tr>
+
                     <tr v-for="id in action_ids">
                         <Action :action_id="id" @action_launched="(msg) => this.fetch_action_ids()"
-                            @action_stoped="(msg) => this.fetch_action_ids()" />
+                            @action_stoped="(msg) => this.fetch_action_ids()"
+                            @action_clicked="(msg) => this.show_action_data = msg" />
                     </tr>
                 </tbody>
             </table>
+            <div v-if="this.show_action_data">
+                <ActionData :action_id="this.show_action_data" @action_launched="(msg) => this.fetch_action_ids()"
+                    @action_stoped="(msg) => this.fetch_action_ids()"
+                    @action_clicked="(msg) => this.show_action_data = null" />
+            </div>
         </div>
     </div>
 </template>

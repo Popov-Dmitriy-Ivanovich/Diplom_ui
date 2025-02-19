@@ -70,23 +70,21 @@ export default {
 </script>
 
 <template>
-    <th v-if="action" scope="row" class="ActionName">
-        <div @click="action_clicked" class="ActionNameClickable">{{ this.action.Name }}&#8744;
+    <div class="ActionDataContent" v-if="action">
+        <div class="ActionDataNav">
+            <div class="ActionDataNavBackButtonContainer">
+                <button @click="action_clicked"> назад </button>
+            </div>
+            <div class="ActionDataNavLaunchButtonContainer">
+                <button @click="launch_action"> старт </button>
+            </div>
         </div>
-    </th>
-    <td v-if="action" class="ActionDescription">{{ this.action.ShortDesc }}</td>
-    <!-- <td v-if="action" class="ActionLastLaunch"> {{ this.action.LastLaunch }}</td> -->
-    <!-- <td v-if="action">
-        <ActionStatus :action_id="action_id"></ActionStatus>
-    </td> -->
-    <td v-if="action">
-        <div v-if="action.Status">
-            <button v-if="action.Status.ID == 3 || action.Status.ID == 4" @click="launch_action"
-                class="ActionLaunch">Старт</button>
-            <button v-else-if="action.Status.ID == 1" class="ActionStop" @click="stop_action"> Стоп</button>
-            <div v-else class="ActionWait"> ... </div>
-        </div>
-    </td>
+        <span> {{ this.action.Name }}</span>
+        <span> {{ this.action.Status.Name }}</span>
+        <span> {{ this.action.LastLaunch }}</span>
+        <span class="ActionDataDescription"> {{ this.action.Description }}</span>
+
+    </div>
 </template>
 
 <style>
@@ -106,6 +104,40 @@ body {
     padding-right: 5%;
 }
 
+.ActionDataContent {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+
+}
+
+.ActionDataNav {
+    display: flex;
+}
+
+.ActionDataDescription {
+    text-align: justify;
+}
+
+.ActionDataNavBackButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-content: center;
+    width: 49%;
+}
+
+.ActionDataNavLaunchButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-content: center;
+    width: 49%;
+}
+
 .ActionWait {}
 
 .ActionStop {
@@ -116,9 +148,5 @@ body {
     border: none;
     padding-left: 5%;
     padding-right: 5%;
-}
-
-.ActionNameClickable {
-    cursor: pointer;
 }
 </style>
