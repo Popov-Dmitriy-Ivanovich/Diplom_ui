@@ -172,7 +172,8 @@ body {
 .ActionDataDescription {
     margin-top: 1%;
     text-align: justify;
-    text-indent: 4%;
+    text-indent: 6%;
+    font-size: 1.05rem;
 }
 
 .ActionDataNavBackButtonContainer {

@@ -51,6 +51,8 @@ html {
     display: flex;
     flex-direction: column;
     border-radius: 15px;
+    box-shadow: rgba(90, 67, 221, 0.4) 0px 48px 100px 0px;
+    /* border: 2px solid #005bff; */
     background-color: rgb(255, 255, 255);
     padding-top: 5%;
     padding-bottom: 7%;

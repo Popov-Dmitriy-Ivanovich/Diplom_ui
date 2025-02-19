@@ -1,6 +1,7 @@
 <script>
 import Action from './Action.vue'
 import ActionData from './ActionData.vue'
+import { IconReload } from '@tabler/icons-vue';
 import { get_cookie } from './cookie.js';
 
 export default {
@@ -19,7 +20,7 @@ export default {
         this.fetch_action_ids()
     },
     components: {
-        Action, ActionData
+        Action, ActionData, IconReload
     },
     methods: {
         fetch_action_ids() {
@@ -43,12 +44,10 @@ export default {
 <template>
     <div class="Content">
         <div class="TopScreenPanel">
-            <div class="LeftPageNameSpace"></div>
-            <h1 class="PageName"> Доступные программы </h1>
-            <div class="UpdateButtonContainer">
-                <button v-if="!this.show_action_data" @click="fetch_action_ids" class="UpdateButton">
-                    Обновить
-                </button>
+            <div @click="fetch_action_ids" class="PageNameContainer" v-if="!show_action_data">
+                <h1 class="PageName"> Доступные программы&nbsp;
+                    <IconReload />
+                </h1>
             </div>
         </div>
         <div class="ActionTableContainer">
@@ -89,6 +88,7 @@ body {
 }
 
 .ActionDataMainPageContainer {
+    box-shadow: rgba(90, 67, 221, 0.09) 0px 48px 100px 0px;
     background-color: #f5f7fa;
     border-radius: 15px;
 }
@@ -112,12 +112,19 @@ body {
     /* height: 5%; */
     /* padding: 1%; */
     width: 100%;
+    justify-content: center;
+    align-items: center;
 }
 
 .PageName {
-    width: 60%;
-    margin: 0px;
+    /* width: 60%; */
+    margin-top: 5%;
+    margin-bottom: 0%;
+    /* margin: 0px; */
     font-size: 1.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     text-align: center;
     align-content: center;
     justify-content: center;
@@ -142,6 +149,8 @@ body {
 }
 
 .ActionTableContainer {
+    box-shadow: rgba(90, 67, 221, 0.07) 0px 48px 100px 0px;
+
     border-radius: 15px;
     border: 2px solid #005bff;
     max-width: 60em;
