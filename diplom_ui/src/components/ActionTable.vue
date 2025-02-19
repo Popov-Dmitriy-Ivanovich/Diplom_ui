@@ -46,8 +46,8 @@ export default {
             <div class="LeftPageNameSpace"></div>
             <h1 class="PageName"> Доступные программы </h1>
             <div class="UpdateButtonContainer">
-                <button @click="fetch_action_ids" class="UpdateButton">
-                    &#10227; Обновить
+                <button v-if="!this.show_action_data" @click="fetch_action_ids" class="UpdateButton">
+                    Обновить
                 </button>
             </div>
         </div>
@@ -71,7 +71,7 @@ export default {
                     </tr>
                 </tbody>
             </table>
-            <div v-if="this.show_action_data">
+            <div v-if="this.show_action_data" class="ActionDataMainPageContainer">
                 <ActionData :action_id="this.show_action_data" @action_launched="(msg) => this.fetch_action_ids()"
                     @action_stoped="(msg) => this.fetch_action_ids()"
                     @action_clicked="(msg) => this.show_action_data = null" />
@@ -88,6 +88,11 @@ body {
     font-family: 'Montserrat';
 }
 
+.ActionDataMainPageContainer {
+    background-color: #f5f7fa;
+    border-radius: 15px;
+}
+
 .Content {
     margin: 1%;
     display: flex;
@@ -102,7 +107,8 @@ body {
 .TopScreenPanel {
     display: flex;
     flex-direction: row;
-    max-width: 80em;
+    /* max-width: 80em; */
+    max-width: 60em;
     /* height: 5%; */
     /* padding: 1%; */
     width: 100%;
@@ -111,8 +117,10 @@ body {
 .PageName {
     width: 60%;
     margin: 0px;
-    font-size: 2rem;
+    font-size: 1.6rem;
     text-align: center;
+    align-content: center;
+    justify-content: center;
 }
 
 .UpdateButtonContainer {
@@ -130,12 +138,13 @@ body {
     padding-left: 5%;
     padding-right: 5%;
     height: 2.5em;
+    font-size: 1.1rem;
 }
 
 .ActionTableContainer {
     border-radius: 15px;
     border: 2px solid #005bff;
-    max-width: 80em;
+    max-width: 60em;
     /* height: 70%; */
     width: 100%;
     margin-top: 2%;

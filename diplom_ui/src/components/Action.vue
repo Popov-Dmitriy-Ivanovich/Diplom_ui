@@ -1,5 +1,6 @@
 <script>
 // import ActionStatus from './ActionStatus.vue'
+import { IconInfoCircle } from '@tabler/icons-vue'
 
 
 export default {
@@ -11,6 +12,9 @@ export default {
             action: null,
             fetch_error: null
         }
+    },
+    components: {
+        IconInfoCircle,
     },
     emits: ["action_launched", "action_stoped", "action_clicked"],
 
@@ -71,7 +75,12 @@ export default {
 
 <template>
     <th v-if="action" scope="row" class="ActionName">
-        <div @click="action_clicked" class="ActionNameClickable">{{ this.action.Name }}&#8744;
+        <!-- <div @click="action_clicked" class="ActionNameClickable">{{ this.action.Name }}&#8744; -->
+        <div @click="action_clicked" class="ActionNameClickable">
+            <div>
+                {{ this.action.Name }}
+            </div>
+            <IconInfoCircle color="gray" />
         </div>
     </th>
     <td v-if="action" class="ActionDescription">{{ this.action.ShortDesc }}</td>
@@ -104,9 +113,13 @@ body {
     border: none;
     padding-left: 5%;
     padding-right: 5%;
+    font-size: 1.1rem;
 }
 
-.ActionWait {}
+.ActionWait {
+    font-size: 1.1rem;
+    /* text-align: left; */
+}
 
 .ActionStop {
     height: 2.5em;
@@ -116,9 +129,18 @@ body {
     border: none;
     padding-left: 5%;
     padding-right: 5%;
+    font-size: 1.1rem;
 }
 
 .ActionNameClickable {
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+}
+
+.ActionNameClickable div {
+    width: calc(100% - 3px)
 }
 </style>
