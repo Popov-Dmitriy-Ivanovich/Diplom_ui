@@ -10,14 +10,26 @@ export default {
             text: '',
             fetch_error: null,
             action_ids: [],
-            show_action_data: null
+            show_action_data: null,
+            user: null,
+            token: null,
+            ar: null,
+            new_action: null,
+            new_user: {
+                login: null,
+                password: null,
+                access_rights: null,
+            }
         }
     },
     mounted() {
-        if (!get_cookie("token")) {
+        if (!get_cookie("token") || !get_cookie("ar")) {
             this.$router.push("/login")
         }
+        this.token = get_cookie("token")
+        this.ar = get_cookie("ar")
         this.fetch_action_ids()
+
     },
     components: {
         Action, ActionData, IconReload
@@ -27,7 +39,17 @@ export default {
             this.action_ids = []
             let origin = window.location.origin;
             let url_group = origin + "/api/actions";
-            fetch(url_group).then(resp => {
+            fetch(url_group, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": get_cookie("token")
+                }
+            }).then(resp => {
+                if (resp.status == 401) {
+                    this.$router.push("/login")
+                }
                 if (resp.status != 200) {
                     this.fetch_error = "Не удалось получить список действий"
                     return
@@ -36,6 +58,9 @@ export default {
                     this.action_ids = body.ids;
                 })
             })
+        },
+        register_new_user() {
+            console.log(this.new_user.login, this.new_user.password)
         }
     }
 }
@@ -51,7 +76,7 @@ export default {
             </div>
         </div>
         <div class="ActionTableContainer">
-            <table v-if="action_ids && !this.show_action_data" class="ActionContainer">
+            <table v-if="(ar & (1 << 3) != 0) && action_ids && !this.show_action_data" class="ActionContainer">
                 <thead>
                     <tr>
                         <th scope="col">Название</th>
@@ -70,10 +95,20 @@ export default {
                     </tr>
                 </tbody>
             </table>
-            <div v-if="this.show_action_data" class="ActionDataMainPageContainer">
+            <div v-if="((ar & (1 << 3) != 0) != 0) && this.show_action_data" class="ActionDataMainPageContainer">
                 <ActionData :action_id="this.show_action_data" @action_launched="(msg) => this.fetch_action_ids()"
                     @action_stoped="(msg) => this.fetch_action_ids()"
                     @action_clicked="(msg) => this.show_action_data = null" />
+            </div>
+        </div>
+        <div v-if="((ar & (1 << 2)) != 0)">
+            Создание ACTION
+        </div>
+        <div v-if="((ar & (1 << 1)) != 0)">
+            <div class="CreateUserContainer">
+                <input type="text" v-model="new_user.login">
+                <input type="text" v-model="new_user.password">
+                <button @click="register_new_user"> Зарегистрировать </button>
             </div>
         </div>
     </div>
@@ -85,6 +120,11 @@ body {
     padding: 0%;
     margin: 0%;
     font-family: 'Montserrat';
+}
+
+.CreateUserContainer {
+    display: flex;
+    flex-direction: column;
 }
 
 .ActionDataMainPageContainer {

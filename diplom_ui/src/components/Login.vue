@@ -6,16 +6,43 @@ export default {
     data() {
         return {
             username: null,
-            password: null
+            password: null,
+            login_status: null,
         }
     },
     mounted() { },
     methods: {
         login() {
-            document.cookie = "token=jwt";
+            // document.cookie = "token=jwt";
+            let origin = window.location.origin;
+            let url_group = origin + "/auth/user/login";
+            fetch(url_group,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    method: "POST",
+                    body: JSON.stringify({ login: this.username, password: this.password })
+                }).then(resp => {
+                    console.log(resp)
+                    if (resp.status == 404) {
+                        this.login_status = "Пользователь не найден"
+                        return
+                    }
+                    if (resp.status == 422) {
+                        this.login_status = "Пароль неверный"
+                        return
+                    }
+                    resp.json().then(body => {
+                        document.cookie = "token=" + body.token;
+                        this.login_status = null
+                        document.cookie = "ar=" + body.user.AccessRights
+                        this.$router.push("/")
+                    })
+                })
 
-            console.log(get_cookie("token"));
-            this.$router.push({ path: "/" });
+            // this.$router.push({ path: "/" });
         }
     }
 }
@@ -26,9 +53,11 @@ export default {
         <div class="LoginFormComponents">
             <span class="LoginLabel"> Логин: </span>
             <input type="text" v-model="username" class="LoginInput">
+            <span class="LoginError" v-if='login_status == "Пользователь не найден"'> {{ this.login_status }}</span>
             <span class="LoginLabel"> Пароль: </span>
             <input type="password" v-model="password" class="LoginInput">
-            <button @click="login" class="LoginButton">Войти</button>
+            <span class="LoginError" v-if='login_status == "Пароль неверный"'> {{ this.login_status }}</span>
+            <button @click="login" class=" LoginButton">Войти</button>
         </div>
     </div>
 </template>
@@ -82,5 +111,9 @@ html {
     font-size: 1.5rem;
     margin-top: 5%;
     margin-bottom: 2%;
+}
+
+.LoginError {
+    color: rgb(233, 32, 32);
 }
 </style>

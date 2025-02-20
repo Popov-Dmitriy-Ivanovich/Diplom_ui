@@ -20,6 +20,12 @@ export default defineConfig({
                 secure: false,
                 ws: true,
             },
+            "/auth": {
+                target: "http://localhost:8081",
+                changeOrigin: true,
+                secure: false,
+                ws: true,
+            },
         },
     },
 });

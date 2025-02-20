@@ -1,6 +1,7 @@
 <script>
 // import ActionStatus from './ActionStatus.vue'
 import { IconChevronLeft } from '@tabler/icons-vue'
+import { get_cookie } from './cookie';
 
 
 export default {
@@ -22,7 +23,17 @@ export default {
     mounted() {
         let origin = window.location.origin;
         let url_group = origin + "/api/actions/" + this.action_id;
-        fetch(url_group).then(resp => {
+        fetch(url_group, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": get_cookie("token"),
+            }
+        }).then(resp => {
+            if (resp.status == 401) {
+                this.$router.push("/login")
+            }
             if (resp.status != 200) {
                 this.fetch_error = "Не удалось получить действие с id = " + this.action_id
                 return
@@ -30,7 +41,17 @@ export default {
             resp.json().then(body => {
                 this.action = body.action
                 this.action_description = body.action.Description.split('\n')
-                fetch(url_group + "/status").then(resp => {
+                fetch(url_group + "/status", {
+                    method: 'GET',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "Authorization": get_cookie("token")
+                    }
+                }).then(resp => {
+                    if (resp.status == 401) {
+                        this.$router.push("/login")
+                    }
                     if (resp.status != 200) {
                         this.fetch_error = "Ну удалось получить статус действия с ID = " + this.action_id
                         return
@@ -46,7 +67,17 @@ export default {
         launch_action() {
             let origin = window.location.origin;
             let url_group = origin + "/api/actions/" + this.action_id + "/run";
-            fetch(url_group).then(resp => {
+            fetch(url_group, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": get_cookie("token"),
+                }
+            }).then(resp => {
+                if (resp.status == 401) {
+                    this.$router.push("/login")
+                }
                 if (resp.status != 200) {
                     this.fetch_error = "Не удалось запустить действие с id = " + this.action_id
                     return
@@ -57,7 +88,17 @@ export default {
         stop_action() {
             let origin = window.location.origin;
             let url_group = origin + "/api/actions/" + this.action_id + "/stop";
-            fetch(url_group).then(resp => {
+            fetch(url_group, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": get_cookie("token")
+                }
+            }).then(resp => {
+                if (resp.status == 401) {
+                    this.$router.push("/login")
+                }
                 if (resp.status != 200) {
                     this.fetch_error = "Не удалось запустить действие с id = " + this.action_id
                     return
