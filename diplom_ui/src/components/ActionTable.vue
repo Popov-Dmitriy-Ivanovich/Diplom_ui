@@ -1,6 +1,7 @@
 <script>
 import Action from './Action.vue'
 import ActionData from './ActionData.vue'
+import UserCard from './UserCard.vue'
 import { IconReload } from '@tabler/icons-vue';
 import { get_cookie } from './cookie.js';
 
@@ -32,7 +33,7 @@ export default {
 
     },
     components: {
-        Action, ActionData, IconReload
+        Action, ActionData, IconReload, UserCard
     },
     methods: {
         fetch_action_ids() {
@@ -105,11 +106,7 @@ export default {
             Создание ACTION
         </div>
         <div v-if="((ar & (1 << 1)) != 0)">
-            <div class="CreateUserContainer">
-                <input type="text" v-model="new_user.login">
-                <input type="text" v-model="new_user.password">
-                <button @click="register_new_user"> Зарегистрировать </button>
-            </div>
+            <UserCard :user_id=3 />
         </div>
     </div>
 </template>
