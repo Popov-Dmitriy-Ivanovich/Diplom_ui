@@ -1,12 +1,14 @@
 <script>
 // import ActionStatus from './ActionStatus.vue'
-import { IconChevronLeft } from '@tabler/icons-vue'
+
+import { IconChevronLeft, IconDeviceFloppy, IconTrashXFilled } from '@tabler/icons-vue'
 import { get_cookie } from './cookie';
 
 
 export default {
     props: {
-        action_id: Number
+        action_id: Number,
+        ar: Number
     },
     data() {
         return {
@@ -16,7 +18,7 @@ export default {
         }
     },
     components: {
-        IconChevronLeft,
+        IconChevronLeft, IconDeviceFloppy, IconTrashXFilled
     },
     emits: ["action_launched", "action_stoped", "action_clicked"],
 
@@ -64,32 +66,34 @@ export default {
         })
     },
     methods: {
-        launch_action() {
+        update_action() {
             let origin = window.location.origin;
-            let url_group = origin + "/api/actions/" + this.action_id + "/run";
-            fetch(url_group, {
-                method: 'GET',
+            let url = origin + "/api/actions/" + this.action_id;
+            fetch(url, {
+                method: 'PUT',
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
-                    "Authorization": get_cookie("token"),
-                }
+                    "Authorization": get_cookie("token")
+                },
+                body: JSON.stringify({
+                    ...this.action
+                })
             }).then(resp => {
                 if (resp.status == 401) {
                     this.$router.push("/login")
-                }
-                if (resp.status != 200) {
-                    this.fetch_error = "Не удалось запустить действие с id = " + this.action_id
                     return
                 }
-                this.$emit("action_launched", "action launched")
+                resp.json().then(body => {
+                    this.$emit("action_clicked", "update")
+                })
             })
         },
-        stop_action() {
+        delete_action() {
             let origin = window.location.origin;
-            let url_group = origin + "/api/actions/" + this.action_id + "/stop";
-            fetch(url_group, {
-                method: 'GET',
+            let url = origin + "/api/actions/" + this.action_id;
+            fetch(url, {
+                method: 'DELETE',
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
@@ -98,12 +102,11 @@ export default {
             }).then(resp => {
                 if (resp.status == 401) {
                     this.$router.push("/login")
-                }
-                if (resp.status != 200) {
-                    this.fetch_error = "Не удалось запустить действие с id = " + this.action_id
                     return
                 }
-                this.$emit("action_stoped", "action stoped")
+                resp.json().then(body => {
+                    this.$emit("action_clicked", "update")
+                })
             })
         },
 
@@ -132,7 +135,7 @@ export default {
             </div>
 
         </div>
-        <div class="ActionDataData">
+        <div class="ActionDataData" v-if="(ar & (1 << 2)) != (1 << 2)">
             <span class="ActionDataName"> {{ this.action.Name }}</span>
             <div class="LastLaunchAndStatus">
                 <span v-if="action.Status"> Статус: {{ this.action.Status.Name }}</span>
@@ -140,6 +143,32 @@ export default {
             </div>
             <div class="ActionDataDescriptionContainer">
                 <span class="ActionDataDescription" v-for="desc in action_description"> {{ desc }}</span>
+            </div>
+        </div>
+        <div class="ActionDataDataAdmin" v-if="(ar & (1 << 2)) == (1 << 2)">
+            <h1>Редактировать действие</h1>
+            <div class="ActionDataDataAdminContent">
+                <div class="LastLaunchAndStatus">
+                    <span v-if="action.Status"> Статус: {{ this.action.Status.Name }}</span>
+                    <span> Последний запуск: {{ this.action.LastLaunch }}</span>
+                </div>
+                <span> Название:</span>
+                <input v-model="this.action.Name" />
+                <span> Краткое описание:</span>
+                <input v-model="this.action.ShortDesc" />
+                <span> Детальное описание:</span>
+                <textarea rows="5" cols="20" v-model="this.action.Description"></textarea>
+                <span> Bash-скрипт:</span>
+                <textarea rows="5" cols="20" v-model="this.action.Cmd"></textarea>
+                <div class="SaveDelete">
+                    <button @click="update_action">
+                        <IconDeviceFloppy class="Icon" />
+                    </button>
+
+                    <button @click="delete_action">
+                        <IconTrashXFilled class="Icon" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -150,6 +179,53 @@ html,
 body {
     width: 100%;
     padding: 1%;
+}
+
+.ActionDataDataAdmin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+.ActionDataDataAdminContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ActionDataDataAdminContent span {
+    font-size: 1.1rem;
+    margin-top: 1%;
+}
+
+.ActionDataDataAdminContent *:not(.Icon):not(button):not(.SaveDelete):not(.LastLaunchAndStatus *):not(.LastLaunchAndStatus):not(span) {
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: 2px solid #9096a1;
+    padding: 2% 1%;
+    margin-top: 1%;
+}
+
+.ActionDataDataAdmin h1 {
+    text-align: center;
+}
+
+.ActionDataDataAdminContent button {
+    display: flex;
+    align-items: center;
+    margin-top: 2%;
+
+    background-color: #005bff;
+    color: white;
+    border-radius: 7px;
+    border: none;
+    padding-left: 15%;
+    padding-right: 15%;
+    height: 2.5em;
+    font-size: 1.1rem;
 }
 
 .ActionDataDescriptionContainer {
@@ -171,6 +247,7 @@ body {
     justify-content: center;
     font-size: 1.25rem;
     flex-wrap: wrap;
+    margin-bottom: 2%;
 }
 
 .LastLaunchAndStatus span {

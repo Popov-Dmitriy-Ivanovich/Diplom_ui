@@ -38,6 +38,7 @@ export default {
                         document.cookie = "token=" + body.token;
                         this.login_status = null
                         document.cookie = "ar=" + body.user.AccessRights
+                        document.cookie = "username=" + body.user.Login
                         this.$router.push("/")
                     })
                 })

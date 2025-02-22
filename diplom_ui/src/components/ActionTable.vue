@@ -1,7 +1,8 @@
 <script>
 import Action from './Action.vue'
 import ActionData from './ActionData.vue'
-import UserCard from './UserCard.vue'
+import CreateAction from './CreateAction.vue'
+import Users from './Users.vue'
 import { IconReload } from '@tabler/icons-vue';
 import { get_cookie } from './cookie.js';
 
@@ -20,20 +21,22 @@ export default {
                 login: null,
                 password: null,
                 access_rights: null,
-            }
+            },
+            username: null,
         }
     },
     mounted() {
         if (!get_cookie("token") || !get_cookie("ar")) {
             this.$router.push("/login")
         }
+        this.username = get_cookie("username")
         this.token = get_cookie("token")
         this.ar = get_cookie("ar")
         this.fetch_action_ids()
 
     },
     components: {
-        Action, ActionData, IconReload, UserCard
+        Action, ActionData, IconReload, Users, CreateAction
     },
     methods: {
         fetch_action_ids() {
@@ -62,22 +65,29 @@ export default {
         },
         register_new_user() {
             console.log(this.new_user.login, this.new_user.password)
+        },
+        exit() {
+            this.$router.push("/login")
         }
     }
 }
 </script>
 
 <template>
+    <div class="Header">
+        <h1>Добро пожаловать, {{ this.username }}</h1>
+        <button @click="exit">Выход</button>
+    </div>
     <div class="Content">
         <div class="TopScreenPanel">
             <div @click="fetch_action_ids" class="PageNameContainer" v-if="!show_action_data">
-                <h1 class="PageName"> Доступные программы&nbsp;
+                <h1 class="PageName"> Доступные действия&nbsp;
                     <IconReload />
                 </h1>
             </div>
         </div>
         <div class="ActionTableContainer">
-            <table v-if="(ar & (1 << 3) != 0) && action_ids && !this.show_action_data" class="ActionContainer">
+            <table v-if="((ar & (1 << 3)) != 0) && action_ids && !this.show_action_data" class="ActionContainer">
                 <thead>
                     <tr>
                         <th scope="col">Название</th>
@@ -96,27 +106,58 @@ export default {
                     </tr>
                 </tbody>
             </table>
-            <div v-if="((ar & (1 << 3) != 0) != 0) && this.show_action_data" class="ActionDataMainPageContainer">
-                <ActionData :action_id="this.show_action_data" @action_launched="(msg) => this.fetch_action_ids()"
-                    @action_stoped="(msg) => this.fetch_action_ids()"
+            <div v-if="((ar & (1 << 3)) != 0) && this.show_action_data" class="ActionDataMainPageContainer">
+                <ActionData :ar="this.ar" :action_id="this.show_action_data"
+                    @action_launched="(msg) => this.fetch_action_ids()" @action_stoped="(msg) => this.fetch_action_ids()"
                     @action_clicked="(msg) => this.show_action_data = null" />
             </div>
         </div>
-        <div v-if="((ar & (1 << 2)) != 0)">
-            Создание ACTION
+        <div v-if="((ar & (1 << 2)) != 0)" class="CreateActionComponent">
+            <CreateAction @action_created="(msg) => this.fetch_action_ids()" />
         </div>
-        <div v-if="((ar & (1 << 1)) != 0)">
-            <UserCard :user_id=3 />
+        <div v-if="((ar & (1 << 1)) != 0)" class="UsersComponent">
+            <Users />
         </div>
     </div>
 </template>
 
 <style>
+.CreateActionComponent {
+    width: 100%;
+    max-width: 60em;
+}
+
+.UsersComponent {
+    width: 100%;
+    max-width: 60em;
+}
+
 html,
 body {
     padding: 0%;
     margin: 0%;
     font-family: 'Montserrat';
+}
+
+.Header {
+    display: flex;
+    justify-content: end;
+    margin-top: 1%;
+}
+
+.Header h1 {
+    font-size: 1.5rem;
+    margin: 0% 0%;
+}
+
+.Header button {
+    font-size: 1.1rem;
+    margin: 0% 2%;
+    background-color: #005bff;
+    color: white;
+    border-radius: 7px;
+    border: none;
+    padding: 0% 0.5%;
 }
 
 .CreateUserContainer {
