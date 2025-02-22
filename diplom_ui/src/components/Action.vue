@@ -3,6 +3,8 @@
 import { IconInfoCircle } from '@tabler/icons-vue'
 import { get_cookie } from './cookie';
 
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
     props: {
@@ -30,8 +32,10 @@ export default {
                 "Authorization": get_cookie("token")
             }
         }).then(resp => {
-            if (resp.status != 200) {
-                this.fetch_error = "Не удалось получить действие с id = " + this.action_id
+            if (resp.status != 200 && resp.status != 404) {
+                toast.error(resp.status, {
+                    autoClose: 5000,
+                })
                 return
             }
             resp.json().then(body => {
@@ -47,8 +51,10 @@ export default {
                     if (resp.status == 401) {
                         this.$router.push("/login")
                     }
-                    if (resp.status != 200) {
-                        this.fetch_error = "Ну удалось получить статус действия с ID = " + this.action_id
+                    if (resp.status != 200 && resp.status != 404) {
+                        toast.error(resp.status, {
+                            autoClose: 5000,
+                        })
                         return
                     }
                     resp.json().then(body => {
@@ -73,8 +79,10 @@ export default {
                 if (resp.status == 401) {
                     this.$router.push("/login")
                 }
-                if (resp.status != 200) {
-                    this.fetch_error = "Не удалось запустить действие с id = " + this.action_id
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
                     return
                 }
                 this.$emit("action_launched", "action launched")
@@ -94,8 +102,10 @@ export default {
                 if (resp.status == 401) {
                     this.$router.push("/login")
                 }
-                if (resp.status != 200) {
-                    this.fetch_error = "Не удалось запустить действие с id = " + this.action_id
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
                     return
                 }
                 this.$emit("action_stoped", "action stoped")

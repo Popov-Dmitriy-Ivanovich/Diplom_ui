@@ -4,6 +4,8 @@
 import { IconChevronLeft, IconDeviceFloppy, IconTrashXFilled } from '@tabler/icons-vue'
 import { get_cookie } from './cookie';
 
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
     props: {
@@ -36,8 +38,10 @@ export default {
             if (resp.status == 401) {
                 this.$router.push("/login")
             }
-            if (resp.status != 200) {
-                this.fetch_error = "Не удалось получить действие с id = " + this.action_id
+            if (resp.status != 200 && resp.status != 404) {
+                toast.error(resp.status, {
+                    autoClose: 5000,
+                })
                 return
             }
             resp.json().then(body => {
@@ -54,8 +58,10 @@ export default {
                     if (resp.status == 401) {
                         this.$router.push("/login")
                     }
-                    if (resp.status != 200) {
-                        this.fetch_error = "Ну удалось получить статус действия с ID = " + this.action_id
+                    if (resp.status != 200 && resp.status != 404) {
+                        toast.error(resp.status, {
+                            autoClose: 5000,
+                        })
                         return
                     }
                     resp.json().then(body => {
@@ -84,7 +90,16 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 resp.json().then(body => {
+                    toast.success("Действие обновлено", {
+                        autoClose: 5000,
+                    })
                     this.$emit("action_clicked", "update")
                 })
             })
@@ -104,8 +119,17 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 resp.json().then(body => {
                     this.$emit("action_clicked", "update")
+                    toast.success("Действие удалено", {
+                        autoClose: 5000,
+                    })
                 })
             })
         },

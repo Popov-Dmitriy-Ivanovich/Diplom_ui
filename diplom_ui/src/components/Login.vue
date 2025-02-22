@@ -1,6 +1,8 @@
 <script>
 
 import { get_cookie } from "./cookie.js"
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 export default {
     props: {},
     data() {
@@ -32,6 +34,12 @@ export default {
                     }
                     if (resp.status == 422) {
                         this.login_status = "Пароль неверный"
+                        return
+                    }
+                    if (resp.status != 200 && resp.status != 404) {
+                        toast.error(resp.status, {
+                            autoClose: 5000,
+                        })
                         return
                     }
                     resp.json().then(body => {

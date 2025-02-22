@@ -6,6 +6,8 @@ import Users from './Users.vue'
 import { IconReload } from '@tabler/icons-vue';
 import { get_cookie } from './cookie.js';
 
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 export default {
     data() {
         return {
@@ -54,8 +56,10 @@ export default {
                 if (resp.status == 401) {
                     this.$router.push("/login")
                 }
-                if (resp.status != 200) {
-                    this.fetch_error = "Не удалось получить список действий"
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
                     return
                 }
                 resp.json().then(body => {

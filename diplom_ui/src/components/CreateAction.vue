@@ -2,6 +2,9 @@
 import { get_cookie } from "./cookie.js"
 import { IconCirclePlusFilled } from '@tabler/icons-vue'
 
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+
 export default {
     props: {},
     emits: ["action_created"],
@@ -38,6 +41,15 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
+                    return
+                }
+                toast.success("Действие создано", {
+                    autoClose: 5000,
+                })
                 resp.json().then(body => {
                     this.$emit("action_created", "action_created")
                 })
@@ -51,10 +63,14 @@ export default {
     <div class="CreateActionDataContainer">
         <h1> Создать действие</h1>
         <div class="CreateActionDataContent">
+            <span>Название:</span>
             <input placeholder="Название" v-model="name">
-            <input placeholder="Описание" v-model="shortDesc">
+            <span>Краткое описание:</span>
+            <input placeholder="Краткое описание" v-model="shortDesc">
+            <span>Детальное описание:</span>
             <textarea placeholder="Детальное описание (отображается при нажатии на действие)" rows="5" cols="20"
                 v-model="description"></textarea>
+            <span>Команда запуска:</span>
             <textarea placeholder="Команда (bash, будет выполнена на сервере)" rows="5" cols="20" v-model="cmd"></textarea>
             <button @click="create_action">
                 <IconCirclePlusFilled class="IconCirclePlusFilled" />
@@ -74,6 +90,11 @@ export default {
     padding: 1% 0%;
     border: 2px solid rgb(255, 83, 83);
     border-radius: 15px;
+}
+
+.CreateActionDataContainer h1 {
+    margin-bottom: 1%;
+    margin-top: 0%;
 }
 
 .CreateActionDataContent {
@@ -98,10 +119,15 @@ export default {
     margin-top: 1%;
 }
 
-.CreateActionDataContent *:not(.IconCirclePlusFilled):not(button) {
+.CreateActionDataContent *:not(.IconCirclePlusFilled):not(button):not(span) {
     margin-top: 1%;
     border-radius: 5px;
     border: 2px solid #7f8797;
     font-size: 1.1rem;
+}
+
+.CreateActionDataContent span {
+    font-size: 1.1rem;
+    margin-top: 2%;
 }
 </style>

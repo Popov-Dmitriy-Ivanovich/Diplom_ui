@@ -3,6 +3,8 @@
 import { IconSquareRoundedPlus, IconDeviceFloppy, IconTrashXFilled, IconCirclePlusFilled } from '@tabler/icons-vue'
 import { get_cookie } from './cookie';
 
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
     props: {
@@ -38,6 +40,12 @@ export default {
             }).then(resp => {
                 if (resp.status == 401) {
                     this.$router.push("/login")
+                    return
+                }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    });
                     return
                 }
                 resp.json().then(body => {
@@ -83,7 +91,17 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 resp.json().then(body => {
+                    toast.success("Пользователь обновлен!", {
+                        autoClose: 5000,
+                    });
+                    this.password = null
                     this.$emit("users_updated", "update")
                 })
             })
@@ -109,7 +127,18 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 resp.json().then(body => {
+                    toast.success("Пользователь создан!", {
+                        autoClose: 5000,
+                    });
+                    this.login = "Введите логин";
+                    this.password = "Введите пароль";
                     this.$emit("users_updated", "create")
                 })
             })
@@ -130,7 +159,16 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status != 200 && resp.status != 404) {
+                    toast.error(resp.status, {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 resp.json().then(body => {
+                    toast.success("Пользователь удален!", {
+                        autoClose: 5000,
+                    });
                     this.$emit("users_updated", "delete")
                 })
             })
