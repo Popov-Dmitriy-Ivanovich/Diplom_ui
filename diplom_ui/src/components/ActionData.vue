@@ -90,6 +90,12 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status == 409) {
+                    toast.error("Нельзя обновить не остановленное действие", {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 if (resp.status != 200 && resp.status != 404) {
                     toast.error(resp.status, {
                         autoClose: 5000,
@@ -117,6 +123,12 @@ export default {
             }).then(resp => {
                 if (resp.status == 401) {
                     this.$router.push("/login")
+                    return
+                }
+                if (resp.status == 409) {
+                    toast.error("Нельзя удалить не остановленное действие", {
+                        autoClose: 5000,
+                    })
                     return
                 }
                 if (resp.status != 200 && resp.status != 404) {

@@ -128,7 +128,7 @@ export default {
                     return
                 }
                 if (resp.status != 200 && resp.status != 404) {
-                    toast.error(resp.status, {
+                    toast.error("Не удалось создать пользователя. Возможно login уже существует", {
                         autoClose: 5000,
                     })
                     return
