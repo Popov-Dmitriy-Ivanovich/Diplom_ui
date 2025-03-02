@@ -55,6 +55,7 @@ export default {
             }).then(resp => {
                 if (resp.status == 401) {
                     this.$router.push("/login")
+                    return
                 }
                 if (resp.status != 200 && resp.status != 404) {
                     toast.error(resp.status, {
