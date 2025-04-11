@@ -14,6 +14,7 @@ export default {
             text: '',
             fetch_error: null,
             action_ids: [],
+            stats: '',
             show_action_data: null,
             user: null,
             token: null,
@@ -66,6 +67,7 @@ export default {
                 }
                 resp.json().then(body => {
                     this.action_ids = body.ids;
+                    this.stats = body.stats;
                 })
             })
         },
@@ -115,6 +117,10 @@ export default {
             </div>
         </div>
         <div class="ActionTableContainer">
+        <div class="StatsContainer">
+            <span>CPU: {{ Math.trunc(JSON.parse(this.stats).cpu) }}%</span>
+            <span>MEM: {{ Math.trunc(JSON.parse(this.stats).mem) }}%</span>
+        </div>
             <table v-if="((ar & (1 << 3)) != 0) && action_ids && !this.show_action_data" class="ActionContainer">
                 <thead>
                     <tr>
@@ -162,6 +168,17 @@ export default {
 .UsersComponent {
     width: 100%;
     max-width: 60em;
+}
+
+.StatsContainer{
+    display: flex;
+    justify-content: space-around;
+    padding: 2% 10%;
+    max-width: 60em;
+}
+
+.StatsContainer span {
+    font-size: 1.1rem;
 }
 
 .LimitLaunched {
