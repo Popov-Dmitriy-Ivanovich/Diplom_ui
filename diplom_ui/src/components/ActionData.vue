@@ -6,7 +6,6 @@ import { get_cookie } from './cookie';
 
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
-
 export default {
     props: {
         action_id: Number,
@@ -16,7 +15,24 @@ export default {
         return {
             action: null,
             fetch_error: null,
-            action_description: null
+            action_description: null,
+            options: {
+                stroke:{
+                    curve: 'stepline',
+                },
+                chart: {
+                    id: 'vuechart-example'
+                },
+                xaxis: {
+                    type: 'datetime',
+                    
+                    categories: []
+                }
+            },
+            series: [{
+                name: 'series-1',
+                data: []
+            }],
         }
     },
     components: {
@@ -46,6 +62,19 @@ export default {
                 return
             }
             resp.json().then(body => {
+                console.log(body.action)
+                this.options.xaxis.categories = []
+                this.series[0].data = []
+                console.log(body.action.Events)
+                body.action.Events.forEach(element => {
+                    if(element.Type == "Launch"){
+                        this.series[0].data.push(1)
+                        this.options.xaxis.categories.push(element.TimeStamp)
+                    } else {
+                        this.series[0].data.push(0)
+                        this.options.xaxis.categories.push(element.TimeStamp)
+                    }
+                });
                 this.action = body.action
                 this.action_description = body.action.Description.split('\n')
                 fetch(url_group + "/status", {
@@ -173,6 +202,8 @@ export default {
             </div>
 
         </div>
+        <span class="ActionDataName"> История запусков: </span>
+        <apexchart  type="line" :options="options" :series="series"></apexchart>
         <div class="ActionDataData" v-if="(ar & (1 << 2)) != (1 << 2)">
             <span class="ActionDataName"> {{ this.action.Name }}</span>
             <div class="LastLaunchAndStatus">

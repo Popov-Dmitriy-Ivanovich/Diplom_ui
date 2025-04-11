@@ -25,6 +25,7 @@ export default {
                 access_rights: null,
             },
             username: null,
+            limit:null,
         }
     },
     mounted() {
@@ -73,6 +74,28 @@ export default {
         },
         exit() {
             this.$router.push("/login")
+        },
+        set_limit() {
+            let origin = window.location.origin;
+            let url_group = origin + "/api/actions/limit/" + this.limit;
+            fetch(url_group, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": get_cookie("token")
+                }
+            }).then(resp=>{
+                if(resp.status != 200) {
+                    toast.error("Что-то пошло не так", {
+                        autoClose: 5000,
+                    })
+                } else {
+                    toast.success("успешно задан лимит = " + this.limit, {
+                        autoClose: 5000,
+                    })
+                }
+            })
         }
     }
 }
@@ -123,6 +146,10 @@ export default {
         <div v-if="((ar & (1 << 1)) != 0)" class="UsersComponent">
             <Users />
         </div>
+        <div v-if="((ar & (1 << 2)) != 0)" class="LimitLaunched">  
+            <input type="number" v-model="this.limit"f>
+            <button @click="set_limit">Установить лимит action</button>
+        </div>
     </div>
 </template>
 
@@ -135,6 +162,32 @@ export default {
 .UsersComponent {
     width: 100%;
     max-width: 60em;
+}
+
+.LimitLaunched {
+    width: 100%;
+    max-width: 30em;
+    border-radius: 15px;
+    margin: 1% 0px;
+    padding: 1%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
+    border: 2px solid red;flex-wrap: wrap;
+}
+
+.LimitLaunched button {
+    font-size: 1.1rem;
+    margin: 0% 2%;
+    background-color: #005bff;
+    color: white;
+    border-radius: 7px;
+    border: none;
+    padding: 0% 0.5%;
+    height: 2em;
+    padding: 0% 1%;
 }
 
 html,

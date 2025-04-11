@@ -81,6 +81,12 @@ export default {
                     this.$router.push("/login")
                     return
                 }
+                if (resp.status == 422) {
+                    toast.error("Превышен лимит одновременно запущенных приложений", {
+                        autoClose: 5000,
+                    })
+                    return
+                }
                 if (resp.status != 200 && resp.status != 404) {
                     toast.error(resp.status, {
                         autoClose: 5000,
